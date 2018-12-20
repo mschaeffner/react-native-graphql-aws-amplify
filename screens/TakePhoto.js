@@ -1,7 +1,7 @@
 import React from 'react'
 import { View, Dimensions, Text } from 'react-native'
 import Button from './Button'
-import { Camera, Permissions } from 'expo'
+import { Camera, Permissions, ImageManipulator } from 'expo'
 import Base64 from 'base64-js'
 import { Storage } from 'aws-amplify';
 
@@ -30,8 +30,13 @@ export default class TakePhoto extends React.Component {
 
   async takePhoto() {
     if (this.camera) {
-      const photo = await this.camera.takePictureAsync({base64: true})
-      const bytes = Base64.toByteArray(photo.base64)
+      const photo = await this.camera.takePictureAsync()
+      const photoSmall = await ImageManipulator.manipulateAsync(
+        photo.uri,
+        [{ resize: {width:200, height: 200}}],
+        { format: 'jpeg', base64: true }
+      )
+      const bytes = Base64.toByteArray(photoSmall.base64)
       this.props.navigation.getParam('takePictureCallback')(bytes)
       this.props.navigation.goBack()
     }
