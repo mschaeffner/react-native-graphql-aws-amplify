@@ -5,6 +5,7 @@
 `amplify configure`
 
 ### Clone this repo
+`git clone git@github.com:mschaeffner/react-native-graphql-aws-amplify.git`
 
 ### Init Amplify in project
 `amplify init`
@@ -18,16 +19,15 @@
 ### Configure GraphQL API
 `amplify add api`
 
-User file `schema.graphql` if asked for a schema.
+When asked for a schema, use the file `schema.graphql` in root directory.
 
-### Push all changes to AWS
+### Push all changes to AWS (this may take a few minutes)
 `amplify push`
 
 
 ### Change GraphQL schema
 - Login into AWS account
-- Go to AppSynch and
-- Select the new API and go to schema
+- Go to AppSync, select the new API and go to schema
 - Replace the schema with following and save:
 
 ```
@@ -77,7 +77,7 @@ type UserProfile {
 }
 ```
 
-### Attache GraphQL resolvers
+### Replace the existing GraphQL resolvers with the followings
 
 #### updateUserProfile(...): UserProfile
 ```
@@ -125,7 +125,7 @@ null
 
 
 
-
+## Get the app running
 
 ### Install NPM dependencies
 yarn
