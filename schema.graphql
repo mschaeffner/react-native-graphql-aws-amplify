@@ -1,0 +1,12 @@
+type UserProfile @model {
+  id: ID!
+  name: String!
+  location: String
+  avatar: S3Object
+}
+
+type S3Object {
+  bucket: String!
+  region: String!
+  key: String!
+}
