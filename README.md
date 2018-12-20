@@ -1,3 +1,6 @@
+# react-native-graphql-aws-amplify
+
+## Get the backend running
 
 ### Install and configure Amplify CLI
 `npm install -g @aws-amplify/cli`
