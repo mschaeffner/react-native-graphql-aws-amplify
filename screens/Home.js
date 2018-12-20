@@ -1,5 +1,5 @@
 import React from 'react'
-import { ScrollView, TouchableOpacity, View, Text, StyleSheet } from 'react-native'
+import { ScrollView, RefreshControl, TouchableOpacity, View, Text, StyleSheet } from 'react-native'
 import Button from './Button'
 import { Auth, Storage } from 'aws-amplify'
 import { S3Image } from 'aws-amplify-react-native'
@@ -47,47 +47,62 @@ export default class Home extends React.Component {
       }
     }
 
+  constructor(props) {
+    super(props)
+    this.state = {
+      refreshing: false
+    }
+  }
+
   render() {
     return (
-      <ScrollView>
-        <Query query={LIST_USER_PROFILES}>
-          {({ loading, error, data }) => {
+      <Query query={LIST_USER_PROFILES}>
+        {({ loading, error, data, refetch }) => {
 
-            if (loading) {
-              return <Text>Loading...</Text>
-            }
+          if (loading) {
+            return <Text>Loading...</Text>
+          }
 
-            if (error) {
-              return <Text>Error :(</Text>
-            }
+          if (error) {
+            return <Text>Error :(</Text>
+          }
 
-            return (
-              <View>
-                {data.listUserProfiles.items.map(item =>
-                  <TouchableOpacity
-                    key={item.id}
-                    style={styles.listItem}
-                    onPress={() => this.props.navigation.navigate('Details', {userId: item.id})}
-                  >
+          return (
+            <ScrollView
+              refreshControl={
+                <RefreshControl refreshing={this.state.refreshing} onRefresh={() => {
+                  this.setState({refreshing: true})
+                  refetch().then(() => {
+                    this.setState({refreshing: false})
+                  })
+                }} />
+              }
+            >
+              {data.listUserProfiles.items.map(item =>
+                <TouchableOpacity
+                  key={item.id}
+                  style={styles.listItem}
+                  onPress={() => this.props.navigation.navigate('Details', {userId: item.id})}
+                >
 
-                    <View style={styles.listItemAvatarContainer}>
-                      {item.avatar && item.avatar.key && <S3Image
-                        imgKey={item.avatar.key}
-                        style={styles.listItemAvatar}
-                      />}
-                    </View>
+                  <View style={styles.listItemAvatarContainer}>
+                    {item.avatar && item.avatar.key && <S3Image
+                      imgKey={item.avatar.key}
+                      style={styles.listItemAvatar}
+                    />}
+                  </View>
 
-                    <Text style={styles.listItemText}>
-                      {item.name}
-                    </Text>
-                  </TouchableOpacity>
-                )}
-              </View>
-            )
+                  <Text style={styles.listItemText}>
+                    {item.name}
+                  </Text>
+                </TouchableOpacity>
+              )}
 
-          }}
-        </Query>
-      </ScrollView>
+          </ScrollView>
+          )
+
+        }}
+      </Query>
     )
   }
 
@@ -119,6 +134,7 @@ const styles = StyleSheet.create({
   headerLink: {
     color: '#007BFF',
     fontSize: 16,
+    paddingLeft: 10,
     paddingRight: 10
   }
 })

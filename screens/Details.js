@@ -36,7 +36,7 @@ export default class Details extends React.Component {
     const userId = this.props.navigation.getParam('userId')
     return (
       <Query query={GET_USER_PROFILE} variables={{id: userId}}>
-        {({ loading, error, data }) => {
+        {({ loading, error, data, refetch }) => {
 
           if (loading) {
               return <Text>Loading...</Text>
@@ -44,6 +44,11 @@ export default class Details extends React.Component {
 
           if (error) {
             return <Text>Error :(</Text>
+          }
+
+          if (!data.getUserProfile) {
+            refetch()
+            return <Text>Loading...</Text>
           }
 
           return (

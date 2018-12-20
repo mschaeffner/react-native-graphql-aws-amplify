@@ -71,7 +71,7 @@ export default class EditProfile extends React.Component {
 
     return (
       <Query query={GET_USER_PROFILE} variables={{id: this.state.userId}}>
-        {({ loading, error, data }) => {
+        {({ loading, error, data, refetch }) => {
 
           if (loading) {
             return <Text>Loading...</Text>
@@ -82,10 +82,15 @@ export default class EditProfile extends React.Component {
           }
 
           const avatarKey = (this.state.avatar && this.state.avatar.key)
-            || (data.getUserProfile.avatar && data.getUserProfile.avatar.key)
+            || (data.getUserProfile && data.getUserProfile.avatar && data.getUserProfile.avatar.key)
 
           return (
-            <Mutation mutation={UPDATE_USER_PROFILE} onCompleted={() => this.props.navigation.goBack()}>
+            <Mutation
+              mutation={UPDATE_USER_PROFILE}
+              onCompleted={() => {
+                refetch().then(() => this.props.navigation.goBack())
+              }}
+            >
               {(updateProfile, { loading, error }) => (
                 <KeyboardAwareScrollView keyboardShouldPersistTaps='always'>
 
@@ -113,13 +118,15 @@ export default class EditProfile extends React.Component {
                   <TextInput
                     style={styles.input}
                     onChangeText={(name) => this.setState({name})}
-                    defaultValue={data.getUserProfile.name}
+                    placeholder='Name'
+                    defaultValue={data.getUserProfile && data.getUserProfile.name}
                   />
 
                   <TextInput
                     style={styles.input}
                     onChangeText={(location) => this.setState({location})}
-                    defaultValue={data.getUserProfile.location}
+                    placeholder='Location'
+                    defaultValue={data.getUserProfile && data.getUserProfile.location}
                   />
 
                   <Button
